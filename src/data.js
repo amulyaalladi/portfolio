@@ -26,15 +26,6 @@ export const projects = [
     live: "https://realtimenews1.netlify.app",
     code: "https://github.com/amulyaalladi/newsportalFrotend.git",
     code2: "https://github.com/amulyaalladi/NewsPortalBackend.git",
-  },
-  {
-    n: "04",
-    name: "Saloon",
-    tagline: "A saloon website with all the services",
-    desc:"",
-    stack:["React", "Tailwind CSS", "Chart.js", "localStorage"],
-    live:"",
-    code:""
   }
 ];
 
