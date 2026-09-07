@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
+import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { GithubIcon as Github, LinkedinIcon as Linkedin, MailIcon as Mail, ArrowUpRightIcon as ArrowUpRight, CopyIcon as Copy, CheckIcon as Check } from "./icons";
-import { projects, skills, contact } from "./data";
+import { projects, skills, skillsTeaser, certificates, contact } from "./data";
+import amulyaPhoto from "./assets/amulya-photo.jpg";
+import certGuviImg from "./assets/certificate-guvi.png";
+
+const certificateImages = {
+  "certificate-guvi": certGuviImg,
+};
 
 const LINES = [
   { prompt: true, text: "whoami" },
@@ -44,17 +51,58 @@ function useTypewriter(lines, speed = 18, lineDelay = 250) {
   return { rendered, done };
 }
 
+// A nav item that scrolls to a section on the home page. If we're on a
+// different route (e.g. /skills), it navigates home first and passes the
+// target section via router state, which Home() then scrolls to on mount.
+function SectionLink({ hash, children }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isHome = location.pathname === "/";
+
+  const handleClick = (e) => {
+    if (isHome) return; // plain anchor scroll handles it
+    e.preventDefault();
+    navigate("/", { state: { scrollTo: hash } });
+  };
+
+  return (
+    <a
+      href={isHome ? `#${hash}` : `/#${hash}`}
+      onClick={handleClick}
+      className="hover:text-cream transition-colors"
+    >
+      {children}
+    </a>
+  );
+}
+
 function Nav() {
+  const location = useLocation();
+  const isSkills = location.pathname === "/skills";
+  const isCertificates = location.pathname === "/certificates";
+
   return (
     <header className="sticky top-0 z-20 backdrop-blur bg-ink/80 border-b border-line">
       <div className="max-w-3xl mx-auto px-6 md:px-0 h-16 flex items-center justify-between">
-        <a href="#top" className="font-display text-sm tracking-tight text-cream">
+        <Link to="/" className="font-display text-sm tracking-tight text-cream">
           amulya<span className="text-gold">.</span>dev
-        </a>
+        </Link>
         <nav className="flex items-center gap-6 font-body text-sm text-slate">
-          <a href="#work" className="hover:text-cream transition-colors">Work</a>
-          <a href="#about" className="hover:text-cream transition-colors">About</a>
-          <a href="#contact" className="hover:text-cream transition-colors">Contact</a>
+          <SectionLink hash="work">Work</SectionLink>
+          <SectionLink hash="about">About</SectionLink>
+          <Link
+            to="/skills"
+            className={`hover:text-cream transition-colors ${isSkills ? "text-cream" : ""}`}
+          >
+            Skills
+          </Link>
+          <Link
+            to="/certificates"
+            className={`hover:text-cream transition-colors ${isCertificates ? "text-cream" : ""}`}
+          >
+            Certificates
+          </Link>
+          <SectionLink hash="contact">Contact</SectionLink>
         </nav>
       </div>
     </header>
@@ -183,7 +231,7 @@ function Work() {
         <span className="font-mono text-xs text-slate">{projects.length} projects</span>
       </div>
       <p className="font-body text-slate text-sm max-w-md mb-6">
-        Full-stack builds — from local-first tools to a MERN app with a live backend.
+        Full-stack MERN builds — authenticated, deployed, and backed by real databases.
       </p>
       <div>
         {projects.map((p) => (
@@ -211,11 +259,9 @@ function About() {
             through GUVI × HCL to sharpen my skills and ship real projects. I'm
             now looking for a full-time developer role.
           </p>
-        </div>
-        <div className="md:col-span-2">
-          <h3 className="font-mono text-xs uppercase tracking-wide text-slate mb-3">Skills</h3>
-          <div className="flex flex-wrap gap-2">
-            {skills.map((s) => (
+
+          <div className="flex flex-wrap gap-2 pt-2">
+            {skillsTeaser.map((s) => (
               <span
                 key={s}
                 className="font-mono text-xs text-cream/80 border border-line rounded px-2.5 py-1.5"
@@ -224,6 +270,20 @@ function About() {
               </span>
             ))}
           </div>
+          <Link
+            to="/skills"
+            className="inline-flex items-center gap-1 font-body text-sm text-gold hover:text-golddim transition-colors pt-1"
+          >
+            View all skills & tools <ArrowUpRight size={14} />
+          </Link>
+        </div>
+
+        <div className="md:col-span-2 flex md:justify-end">
+          <img
+            src={amulyaPhoto}
+            alt="Alladi Amulya"
+            className="w-48 h-48 md:w-56 md:h-56 rounded-lg object-cover border border-line"
+          />
         </div>
       </div>
     </section>
@@ -303,14 +363,116 @@ function Footer() {
   );
 }
 
-export default function App() {
+function SkillGroup({ title, items }) {
   return (
-    <div className="min-h-screen bg-ink font-body">
-      <Nav />
+    <div>
+      <h3 className="font-mono text-xs uppercase tracking-wide text-slate mb-4">{title}</h3>
+      <div className="flex flex-wrap gap-2">
+        {items.map((s) => (
+          <span
+            key={s}
+            className="font-mono text-sm text-cream/80 border border-line rounded px-3 py-2"
+          >
+            {s}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkillsPage() {
+  return (
+    <section className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-20">
+      <h1 className="font-display text-2xl md:text-3xl text-cream mb-2">Skills</h1>
+      <p className="font-body text-slate text-sm max-w-md mb-10">
+        The languages, frameworks, and tooling behind the MERN stack projects in{" "}
+        <SectionLink hash="work">Work</SectionLink>.
+      </p>
+
+      <div className="space-y-12">
+        <SkillGroup title="Technical Skills" items={skills.technical} />
+        <SkillGroup title="Tools" items={skills.tools} />
+      </div>
+    </section>
+  );
+}
+
+function CertificateEntry({ cert }) {
+  return (
+    <div className="border-t border-line py-10 first:border-t-0 first:pt-0">
+      <div className="grid md:grid-cols-5 gap-8 items-start">
+        <div className="md:col-span-2">
+          <img
+            src={certificateImages[cert.image]}
+            alt={`${cert.title} certificate`}
+            className="w-full rounded-lg border border-line"
+          />
+        </div>
+        <div className="md:col-span-3">
+          <h3 className="font-display text-xl text-cream mb-1">{cert.title}</h3>
+          <p className="font-mono text-xs text-slate mb-4">
+            {cert.issuer} · {cert.duration} · Issued {cert.issuedDate}
+          </p>
+          <p className="font-body text-cream/70 text-[15px] leading-relaxed max-w-xl mb-3">
+            {cert.desc}
+          </p>
+          <p className="font-mono text-xs text-slate">{cert.note}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CertificatesPage() {
+  return (
+    <section className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-20">
+      <h1 className="font-display text-2xl md:text-3xl text-cream mb-2">Certificates</h1>
+      <p className="font-body text-slate text-sm max-w-md mb-4">
+        Formal training backing the skills in{" "}
+        <SectionLink hash="about">About</SectionLink> and the projects in{" "}
+        <SectionLink hash="work">Work</SectionLink>.
+      </p>
+      <div>
+        {certificates.map((cert) => (
+          <CertificateEntry key={cert.title} cert={cert} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function Home() {
+  const location = useLocation();
+
+  // If we navigated here from another route with a section to scroll to
+  // (see SectionLink), jump there once the page has rendered.
+  useEffect(() => {
+    if (location.state?.scrollTo) {
+      const el = document.getElementById(location.state.scrollTo);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location.state]);
+
+  return (
+    <>
       <Hero />
       <Work />
       <About />
       <Contact />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-ink font-body">
+      <Nav />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/certificates" element={<CertificatesPage />} />
+      </Routes>
       <Footer />
     </div>
   );
