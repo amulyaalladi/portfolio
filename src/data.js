@@ -2,79 +2,52 @@ export const projects = [
   {
     n: "01",
     name: "NotesApp",
-    tagline: "Full-stack note-taking app with secure, per-user authentication",
-    desc: "Converted from a local-only prototype into a full MERN application. Users register and log in with JWT-based authentication, then create, tag, and organize notes that are persisted per-user in MongoDB through a REST API — replacing the earlier browser-only storage.",
-    stack: ["React", "Redux", "Node.js", "Express", "MongoDB", "Mongoose", "JWT Auth", "Tailwind CSS"],
+    tagline: "Secure, full-stack note management with per-user data",
+    desc: "A MERN notes platform where authenticated users can create, organize, tag, edit, and persist notes. JWT authentication protects user data while a REST API connects the React client to MongoDB.",
+    stack: ["React", "Redux Toolkit", "Node.js", "Express", "MongoDB", "Mongoose", "JWT", "Tailwind CSS"],
     live: "https://project1notesapp.netlify.app",
-    code: "https://github.com/amulyaalladi/NotesApp.git",
-    code2: "https://github.com/amulyaalladi/BE-notes.git"
+    frontend: "https://github.com/amulyaalladi/NotesApp.git",
+    backend: "https://github.com/amulyaalladi/BE-notes.git"
   },
   {
     n: "02",
     name: "Smart Expense Tracker",
-    tagline: "Full-stack expense tracker with per-user budgets and secure auth",
-    desc: "Converted from a local-only prototype into a full MERN application. Expenses and budgets are now scoped to each authenticated user and stored in MongoDB via a Mongoose-backed REST API, with JWT login and registration replacing browser storage entirely.",
-    stack: ["React", "Redux", "Node.js", "Express", "MongoDB", "Mongoose", "JWT Auth", "Tailwind CSS"],
+    tagline: "Personal finance dashboard with budgets and authentication",
+    desc: "A full-stack expense tracker that keeps expenses and budgets scoped to authenticated users. Data is persisted in MongoDB through an Express REST API, with a responsive React interface for managing finances.",
+    stack: ["React", "Redux Toolkit", "Node.js", "Express", "MongoDB", "Mongoose", "JWT", "Tailwind CSS"],
     live: "https://smartexpesetracker.netlify.app",
-    code: "https://github.com/amulyaalladi/SmartExpenseProject.git",
-    code2: "https://github.com/amulyaalladi/expenseTrackerBackend.git"
+    frontend: "https://github.com/amulyaalladi/SmartExpenseProject.git",
+    backend: "https://github.com/amulyaalladi/expenseTrackerBackend.git"
   },
   {
     n: "03",
     name: "Real-Time News App",
-    tagline: "Full-stack news alerts with customizable delivery preferences",
-    desc: "A real-time news alert system that delivers breaking updates based on user-chosen categories and frequency, with notifications sent by email. Built as a full MERN application with a separate frontend and backend.",
-    stack: ["MongoDB", "Express", "React", "Node.js", "Tailwind CSS", "Email service"],
+    tagline: "Personalized news alerts with category and delivery preferences",
+    desc: "A MERN news platform that lets users choose categories and notification preferences, then receive relevant updates by email. The frontend and backend are separated into deployable applications.",
+    stack: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS", "Email Service"],
     live: "https://realtimenews1.netlify.app",
-    code: "https://github.com/amulyaalladi/newsportalFrotend.git",
-    code2: "https://github.com/amulyaalladi/NewsPortalBackend.git",
+    frontend: "https://github.com/amulyaalladi/newsportalFrotend.git",
+    backend: "https://github.com/amulyaalladi/NewsPortalBackend.git"
   }
 ];
 
-// Skills are split into two groups, shown on the dedicated /skills page:
-// - technical: languages, frameworks, and core concepts
-// - tools: the surrounding tooling used to build/ship the MERN stack projects
 export const skills = {
-  technical: [
-    "JavaScript (ES6+)",
-    "React.js",
-    "Redux Toolkit",
-    "Node.js",
-    "Express.js",
-    "MongoDB",
-    "Mongoose",
-    "REST APIs",
-    "JWT Authentication",
-    "HTML5",
-    "CSS3",
-    "Tailwind CSS",
-  ],
-  tools: [
-    "Git & GitHub",
-    "VS Code",
-    "Postman",
-    "npm",
-    "Vite",
-    "MongoDB Atlas",
-    "Render",
-    "Netlify",
-    "Chrome DevTools",
-  ],
+  frontend: ["JavaScript (ES6+)", "React.js", "Redux Toolkit", "HTML5", "CSS3", "Tailwind CSS", "Responsive UI"],
+  backend: ["Node.js", "Express.js", "REST APIs", "MongoDB", "Mongoose", "JWT Authentication"],
+  tools: ["Git & GitHub", "VS Code", "Postman", "npm", "Vite", "MongoDB Atlas", "Render", "Netlify", "Chrome DevTools"],
+  soft: ["Problem Solving", "Communication", "Team Collaboration", "Adaptability", "Time Management", "Continuous Learning"]
 };
 
-// Short teaser shown inline on the About section, linking through to the
-// full /skills page rather than duplicating the whole list there.
-export const skillsTeaser = ["React", "Node.js", "Express", "MongoDB", "Redux"];
+export const skillsTeaser = ["React", "Node.js", "Express", "MongoDB", "Redux Toolkit"];
 
 export const certificates = [
   {
     title: "Full Stack Development Course With AI Tools",
     issuer: "GUVI × HCL",
-    note: "An IITM Incubated Company · Google for Education Partner",
+    note: "IITM Incubated Company · Google for Education Partner",
     duration: "7 Months",
     issuedDate: "August 19, 2026",
-    signatory: "Arun Prakash M, Founder and CEO, GUVI Geek Network",
-    desc: "Awarded on completing all modules of GUVI × HCL's intensive Full Stack Development program — the training referenced in About, covering the MERN stack end to end and forming the foundation for the full-stack projects showcased in Work.",
+    desc: "Completed an intensive full-stack development program covering the MERN stack and practical application development.",
     image: "certificate-guvi",
   },
 ];

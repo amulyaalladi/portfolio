@@ -1,108 +1,54 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
-import { GithubIcon as Github, LinkedinIcon as Linkedin, MailIcon as Mail, ArrowUpRightIcon as ArrowUpRight, CopyIcon as Copy, CheckIcon as Check } from "./icons";
+import {
+  GithubIcon as Github,
+  LinkedinIcon as Linkedin,
+  MailIcon as Mail,
+  ArrowUpRightIcon as ArrowUpRight,
+  CopyIcon as Copy,
+  CheckIcon as Check,
+  DownloadIcon as Download,
+  FileTextIcon as FileText,
+  ExternalLinkIcon as ExternalLink,
+} from "./icons";
 import { projects, skills, skillsTeaser, certificates, contact } from "./data";
 import amulyaPhoto from "./assets/amulya-photo.jpg";
 import certGuviImg from "./assets/certificate-guvi.png";
 
-const certificateImages = {
-  "certificate-guvi": certGuviImg,
-};
+const certificateImages = { "certificate-guvi": certGuviImg };
+const RESUME_URL = "/resume.pdf";
 
-const LINES = [
-  { prompt: true, text: "whoami" },
-  { prompt: false, text: "Alladi Amulya — MERN Stack Developer" },
-  { prompt: false, text: "Designing, building, and deploying full-stack" },
-  { prompt: false, text: "apps end to end — JavaScript from database to client." },
-];
-
-function useTypewriter(lines, speed = 18, lineDelay = 250) {
-  const [rendered, setRendered] = useState([]);
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function run() {
-      for (let i = 0; i < lines.length; i++) {
-        if (cancelled) return;
-        const { prompt, text } = lines[i];
-        let acc = "";
-        for (let c = 0; c < text.length; c++) {
-          if (cancelled) return;
-          acc += text[c];
-          await new Promise((r) => setTimeout(r, speed));
-          setRendered((prev) => {
-            const next = [...prev];
-            next[i] = { prompt, text: acc };
-            return next;
-          });
-        }
-        await new Promise((r) => setTimeout(r, lineDelay));
-      }
-      if (!cancelled) setDone(true);
-    }
-    run();
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return { rendered, done };
-}
-
-// A nav item that scrolls to a section on the home page. If we're on a
-// different route (e.g. /skills), it navigates home first and passes the
-// target section via router state, which Home() then scrolls to on mount.
 function SectionLink({ hash, children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
-
   const handleClick = (e) => {
-    if (isHome) return; // plain anchor scroll handles it
+    if (isHome) return;
     e.preventDefault();
     navigate("/", { state: { scrollTo: hash } });
   };
-
-  return (
-    <a
-      href={isHome ? `#${hash}` : `/#${hash}`}
-      onClick={handleClick}
-      className="hover:text-cream transition-colors"
-    >
-      {children}
-    </a>
-  );
+  return <a href={isHome ? `#${hash}` : `/#${hash}`} onClick={handleClick}>{children}</a>;
 }
 
 function Nav() {
-  const location = useLocation();
-  const isSkills = location.pathname === "/skills";
-  const isCertificates = location.pathname === "/certificates";
-
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
   return (
-    <header className="sticky top-0 z-20 backdrop-blur bg-ink/80 border-b border-line">
-      <div className="max-w-3xl mx-auto px-6 md:px-0 h-16 flex items-center justify-between">
-        <Link to="/" className="font-display text-sm tracking-tight text-cream">
+    <header className="sticky top-0 z-50 border-b border-line/80 bg-ink/85 backdrop-blur-xl">
+      <div className="max-w-6xl mx-auto px-5 md:px-8 h-16 flex items-center justify-between">
+        <Link to="/" onClick={close} className="font-display font-bold text-lg tracking-tight text-cream">
           amulya<span className="text-gold">.</span>dev
         </Link>
-        <nav className="flex items-center gap-6 font-body text-sm text-slate">
-          <SectionLink hash="work">Work</SectionLink>
-          <SectionLink hash="about">About</SectionLink>
-          <Link
-            to="/skills"
-            className={`hover:text-cream transition-colors ${isSkills ? "text-cream" : ""}`}
-          >
-            Skills
-          </Link>
-          <Link
-            to="/certificates"
-            className={`hover:text-cream transition-colors ${isCertificates ? "text-cream" : ""}`}
-          >
-            Certificates
-          </Link>
-          <SectionLink hash="contact">Contact</SectionLink>
+        <button className="md:hidden text-cream text-2xl" onClick={() => setOpen(!open)} aria-label="Toggle menu">
+          {open ? "×" : "☰"}
+        </button>
+        <nav className={`${open ? "flex" : "hidden"} md:flex absolute md:static top-16 left-0 right-0 md:w-auto bg-ink md:bg-transparent border-b md:border-0 border-line px-5 py-5 md:p-0 flex-col md:flex-row gap-5 md:gap-7 font-body text-sm text-slate`}>
+          <SectionLink hash="about"><span onClick={close}>About</span></SectionLink>
+          <SectionLink hash="resume"><span onClick={close}>Resume</span></SectionLink>
+          <SectionLink hash="skills"><span onClick={close}>Skills</span></SectionLink>
+          <SectionLink hash="projects"><span onClick={close}>Projects</span></SectionLink>
+          <SectionLink hash="certificates"><span onClick={close}>Certificates</span></SectionLink>
+          <SectionLink hash="contact"><span onClick={close} className="text-gold">Contact</span></SectionLink>
         </nav>
       </div>
     </header>
@@ -110,180 +56,170 @@ function Nav() {
 }
 
 function Hero() {
-  const { rendered, done } = useTypewriter(LINES);
-
   return (
-    <section id="top" className="max-w-3xl mx-auto px-6 md:px-0 pt-12 pb-8 md:pt-16 md:pb-10">
-      <div className="rounded-lg border border-line bg-ink2 overflow-hidden shadow-[0_0_0_1px_rgba(255,255,255,0.02)]">
-        <div className="flex items-center gap-1.5 px-4 py-3 border-b border-line">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#4B5372]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#4B5372]" />
-          <span className="w-2.5 h-2.5 rounded-full bg-[#4B5372]" />
-          <span className="ml-3 font-mono text-xs text-slate">amulya@dev — zsh</span>
+    <section className="relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_75%_20%,rgba(232,163,61,.14),transparent_32%),radial-gradient(circle_at_15%_45%,rgba(91,108,180,.12),transparent_28%)]" />
+      <div className="relative max-w-6xl mx-auto px-5 md:px-8 pt-20 md:pt-28 pb-20 md:pb-28 grid lg:grid-cols-[1.25fr_.75fr] gap-14 items-center">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-ink2/70 px-3 py-1.5 text-xs text-slate mb-7">
+            <span className="w-2 h-2 rounded-full bg-gold animate-pulse" /> Available for full-time opportunities
+          </div>
+          <p className="font-mono text-gold text-sm mb-4">Hello, I'm</p>
+          <h1 className="font-display font-bold text-5xl md:text-7xl leading-[.95] tracking-tight text-cream">
+            Alladi Amulya<span className="text-gold">.</span>
+          </h1>
+          <h2 className="font-display text-2xl md:text-3xl text-slate mt-5">MERN Stack Developer</h2>
+          <p className="font-body text-cream/65 text-base md:text-lg leading-relaxed max-w-2xl mt-7">
+            I build responsive, user-focused full-stack web applications with React, Node.js, Express and MongoDB — from polished interfaces to secure REST APIs.
+          </p>
+          <div className="flex flex-wrap gap-3 mt-9">
+            <a href="#projects" className="btn-primary">Explore projects <ArrowUpRight size={16} /></a>
+            <a href={RESUME_URL} target="_blank" rel="noreferrer" className="btn-secondary"><FileText size={16} /> View resume</a>
+          </div>
+          <div className="flex gap-5 mt-9">
+            <a href={contact.github} target="_blank" rel="noreferrer" aria-label="GitHub" className="social"><Github size={19}/></a>
+            <a href={contact.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="social"><Linkedin size={19}/></a>
+            <a href={`mailto:${contact.email}`} aria-label="Email" className="social"><Mail size={19}/></a>
+          </div>
         </div>
-        <div className="p-6 md:p-8 font-mono text-[13px] md:text-sm leading-relaxed min-h-[176px]">
-          {rendered.map((line, i) => (
-            <div key={i} className={line.prompt ? "text-gold" : "text-cream/90"}>
-              {line.prompt && <span className="text-slate mr-2">$</span>}
-              {line.text}
+        <div className="flex justify-center lg:justify-end">
+          <div className="relative">
+            <div className="absolute -inset-4 rounded-[2rem] bg-gold/10 blur-2xl" />
+            <div className="relative rounded-[2rem] border border-line bg-ink2 p-3 shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+              <img src={amulyaPhoto} alt="Alladi Amulya" className="w-64 h-80 md:w-72 md:h-96 object-cover rounded-[1.4rem]" />
             </div>
-          ))}
-          <span className={`inline-block w-2 h-4 bg-gold align-middle ml-0.5 ${done ? "blink" : "opacity-0"}`} />
+          </div>
         </div>
-      </div>
-
-      <div className="mt-10 flex flex-wrap items-center gap-3">
-        <a
-          href="#work"
-          className="inline-flex items-center gap-1.5 rounded-md bg-gold text-ink font-body font-medium text-sm px-4 py-2.5 hover:bg-golddim transition-colors"
-        >
-          View projects
-        </a>
-        <a
-          href={`mailto:${contact.email}`}
-          className="inline-flex items-center gap-1.5 rounded-md border border-line font-body text-sm text-cream px-4 py-2.5 hover:border-slate transition-colors"
-        >
-          Get in touch
-        </a>
       </div>
     </section>
   );
 }
 
-function StatusDot() {
+function SectionHeading({ eyebrow, title, text }) {
   return (
-    <span className="relative flex h-2 w-2">
-      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75" />
-      <span className="relative inline-flex rounded-full h-2 w-2 bg-gold" />
-    </span>
-  );
-}
-
-function ProjectEntry({ project }) {
-  return (
-    <div className="border-t border-line py-10 first:border-t-0 first:pt-0">
-      <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2 mb-3">
-        <div className="flex items-baseline gap-4">
-          <span className="font-mono text-sm text-slate">{project.n}</span>
-          <h3 className="font-display text-xl md:text-2xl text-cream">{project.name}</h3>
-        </div>
-        <div className="flex items-center gap-1.5 font-mono text-xs text-slate">
-          <StatusDot />
-          live
-        </div>
-      </div>
-
-      <p className="font-body text-cream/70 text-[15px] leading-relaxed max-w-xl mb-2">
-        {project.tagline}
-      </p>
-      <p className="font-body text-slate text-sm leading-relaxed max-w-xl mb-5">
-        {project.desc}
-      </p>
-
-      <div className="flex flex-wrap gap-2 mb-5">
-        {project.stack.map((s) => (
-          <span
-            key={s}
-            className="font-mono text-xs text-cream/80 border border-line rounded px-2 py-1"
-          >
-            {s}
-          </span>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-5 font-body text-sm">
-        <a
-          href={project.live}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-gold hover:text-golddim transition-colors"
-        >
-          Live demo <ArrowUpRight size={14} />
-        </a>
-        <a
-          href={project.code}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-cream/80 hover:text-cream transition-colors"
-        >
-          Code {project.code2 ? "(frontend)" : ""} <ArrowUpRight size={14} />
-        </a>
-        {project.code2 && (
-          <a
-            href={project.code2}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-cream/80 hover:text-cream transition-colors"
-          >
-            Code (backend) <ArrowUpRight size={14} />
-          </a>
-        )}
-      </div>
+    <div className="mb-10">
+      <p className="font-mono text-xs uppercase tracking-[.25em] text-gold mb-3">{eyebrow}</p>
+      <h2 className="font-display font-bold text-3xl md:text-5xl text-cream tracking-tight">{title}</h2>
+      {text && <p className="text-slate max-w-2xl mt-4 leading-relaxed">{text}</p>}
     </div>
-  );
-}
-
-function Work() {
-  return (
-    <section id="work" className="max-w-3xl mx-auto px-6 md:px-0 py-10 md:py-14 border-t border-line">
-      <div className="flex items-baseline justify-between mb-2">
-        <h2 className="font-display text-2xl md:text-3xl text-cream">Work</h2>
-        <span className="font-mono text-xs text-slate">{projects.length} projects</span>
-      </div>
-      <p className="font-body text-slate text-sm max-w-md mb-6">
-        Full-stack MERN builds — authenticated, deployed, and backed by real databases.
-      </p>
-      <div>
-        {projects.map((p) => (
-          <ProjectEntry key={p.n} project={p} />
-        ))}
-      </div>
-    </section>
   );
 }
 
 function About() {
   return (
-    <section id="about" className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-20 border-t border-line">
-      <h2 className="font-display text-2xl md:text-3xl text-cream mb-6">About</h2>
-      <div className="grid md:grid-cols-5 gap-10">
-        <div className="md:col-span-3 font-body text-cream/70 text-[15px] leading-relaxed space-y-4">
-          <p>
-            I build full-stack web applications using the MERN stack —
-            comfortable bridging front-end interfaces and back-end architecture,
-            using JavaScript the whole way from database to client.
+    <section id="about" className="section-shell">
+      <SectionHeading eyebrow="01 / About me" title="A developer who cares about the details." />
+      <div className="grid md:grid-cols-3 gap-5">
+        <div className="md:col-span-2 glass-card p-7 md:p-9">
+          <p className="text-cream/75 text-lg leading-8">
+            I'm a MERN Stack Developer focused on building practical web products with clean UI, reliable APIs and maintainable code. I enjoy turning requirements into simple, intuitive experiences and connecting them to real backend systems.
           </p>
-          <p>
-            I'm returning to the workforce after a maternity break, having
-            spent the last 7 months completing an intensive MERN stack program
-            through GUVI × HCL to sharpen my skills and ship real projects. I'm
-            now looking for a full-time developer role.
+          <p className="text-slate leading-7 mt-5">
+            My recent work includes authenticated productivity tools, personal finance dashboards and a news platform with personalized alerts. I work across the stack and am comfortable with React, state management, REST APIs, Node.js, Express and MongoDB.
           </p>
-
-          <div className="flex flex-wrap gap-2 pt-2">
-            {skillsTeaser.map((s) => (
-              <span
-                key={s}
-                className="font-mono text-xs text-cream/80 border border-line rounded px-2.5 py-1.5"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-          <Link
-            to="/skills"
-            className="inline-flex items-center gap-1 font-body text-sm text-gold hover:text-golddim transition-colors pt-1"
-          >
-            View all skills & tools <ArrowUpRight size={14} />
-          </Link>
         </div>
+        <div className="glass-card p-7 flex flex-col justify-between">
+          <div>
+            <p className="text-xs font-mono text-slate uppercase tracking-widest">What I bring</p>
+            <ul className="mt-5 space-y-3 text-cream/75 text-sm">
+              <li>✦ Responsive, accessible interfaces</li>
+              <li>✦ Secure authentication & APIs</li>
+              <li>✦ MongoDB-backed applications</li>
+              <li>✦ Git-based development workflow</li>
+            </ul>
+          </div>
+          <a href={`mailto:${contact.email}`} className="text-gold text-sm mt-8">Let's connect →</a>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        <div className="md:col-span-2 flex md:justify-end">
-          <img
-            src={amulyaPhoto}
-            alt="Alladi Amulya"
-            className="w-48 h-48 md:w-56 md:h-56 rounded-lg object-cover border border-line"
-          />
+function Resume() {
+  return (
+    <section id="resume" className="section-shell">
+      <SectionHeading eyebrow="02 / Resume" title="My resume, one click away." text="View the full resume in your browser or download a copy for your records." />
+      <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="icon-box"><FileText size={24}/></div>
+          <div>
+            <h3 className="font-display text-xl text-cream">Alladi Amulya — Resume</h3>
+            <p className="text-sm text-slate mt-1">MERN Stack Developer</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <a href={RESUME_URL} target="_blank" rel="noreferrer" className="btn-primary"><ExternalLink size={16}/> View resume</a>
+          <a href={RESUME_URL} download className="btn-secondary"><Download size={16}/> Download</a>
+        </div>
+      </div>
+      <p className="text-xs text-slate mt-3">Place your latest PDF at <code className="text-gold">public/resume.pdf</code> to activate these buttons.</p>
+    </section>
+  );
+}
+
+function SkillCard({ title, items }) {
+  return (
+    <div className="glass-card p-6 md:p-7 hover:-translate-y-1 transition-transform duration-300">
+      <h3 className="font-display text-xl text-cream mb-5">{title}</h3>
+      <div className="flex flex-wrap gap-2">{items.map((item) => <span key={item} className="skill-pill">{item}</span>)}</div>
+    </div>
+  );
+}
+
+function Skills() {
+  return (
+    <section id="skills" className="section-shell">
+      <SectionHeading eyebrow="03 / Skills" title="Tools I use to build." text="A practical mix of technical skills and people skills used across my projects and development workflow." />
+      <div className="grid md:grid-cols-2 gap-5">
+        <SkillCard title="Frontend" items={skills.frontend} />
+        <SkillCard title="Backend" items={skills.backend} />
+        <SkillCard title="Tools & Deployment" items={skills.tools} />
+        <SkillCard title="Soft Skills" items={skills.soft} />
+      </div>
+    </section>
+  );
+}
+
+function ProjectCard({ project }) {
+  return (
+    <article className="project-card group">
+      <div className="flex justify-between items-start gap-4">
+        <span className="font-mono text-sm text-gold">{project.n}</span>
+        <span className="text-xs border border-line rounded-full px-3 py-1 text-slate">MERN</span>
+      </div>
+      <h3 className="font-display font-bold text-2xl text-cream mt-7">{project.name}</h3>
+      <p className="text-gold/90 text-sm mt-2">{project.tagline}</p>
+      <p className="text-slate text-sm leading-6 mt-4 min-h-[120px]">{project.desc}</p>
+      <div className="flex flex-wrap gap-2 mt-5">{project.stack.map((s) => <span key={s} className="skill-pill">{s}</span>)}</div>
+      <div className="border-t border-line mt-7 pt-5 flex flex-wrap gap-x-5 gap-y-3 text-sm">
+        <a href={project.live} target="_blank" rel="noreferrer" className="link-gold">Live demo <ArrowUpRight size={14}/></a>
+        <a href={project.frontend} target="_blank" rel="noreferrer" className="link-muted">Frontend <Github size={14}/></a>
+        <a href={project.backend} target="_blank" rel="noreferrer" className="link-muted">Backend <Github size={14}/></a>
+      </div>
+    </article>
+  );
+}
+
+function Projects() {
+  return (
+    <section id="projects" className="section-shell">
+      <SectionHeading eyebrow="04 / Projects" title="Things I've built." text="Three complete MERN applications with real authentication, APIs, databases and deployed frontends." />
+      <div className="grid lg:grid-cols-3 gap-5">{projects.map((p) => <ProjectCard key={p.n} project={p} />)}</div>
+    </section>
+  );
+}
+
+function Certificates() {
+  return (
+    <section id="certificates" className="section-shell">
+      <SectionHeading eyebrow="05 / Certifications" title="Learning that backs the work." />
+      <div className="grid md:grid-cols-[.8fr_1.2fr] gap-7 glass-card p-5 md:p-7 items-center">
+        <img src={certificateImages[certificates[0].image]} alt="GUVI certificate" className="w-full rounded-xl border border-line" />
+        <div>
+          <p className="font-mono text-xs text-gold uppercase tracking-widest">{certificates[0].issuer}</p>
+          <h3 className="font-display font-bold text-2xl text-cream mt-3">{certificates[0].title}</h3>
+          <p className="text-slate text-sm mt-2">{certificates[0].duration} · Issued {certificates[0].issuedDate}</p>
+          <p className="text-cream/70 leading-7 mt-5">{certificates[0].desc}</p>
         </div>
       </div>
     </section>
@@ -292,151 +228,34 @@ function About() {
 
 function Contact() {
   const [copied, setCopied] = useState(false);
-
   const copyEmail = async () => {
-    try {
-      await navigator.clipboard.writeText(contact.email);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // clipboard may be unavailable; ignore silently
-    }
+    try { await navigator.clipboard.writeText(contact.email); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch {}
   };
-
   return (
-    <section id="contact" className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-24 border-t border-line">
-      <h2 className="font-display text-2xl md:text-3xl text-cream mb-3">Let's work together</h2>
-      <p className="font-body text-slate text-[15px] max-w-md mb-8">
-        Open to full-time MERN / full-stack developer roles. Reach out — I
-        usually reply within a day.
-      </p>
-
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-10">
-        <button
-          onClick={copyEmail}
-          className="inline-flex items-center justify-between gap-4 rounded-md bg-gold text-ink font-body font-medium text-sm px-4 py-2.5 hover:bg-golddim transition-colors"
-        >
-          {contact.email}
-          {copied ? <Check size={16} /> : <Copy size={16} />}
-        </button>
-      </div>
-
-      <div className="flex items-center gap-5">
-        <a
-          href={contact.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="GitHub"
-          className="text-cream/70 hover:text-cream transition-colors"
-        >
-          <Github size={20} />
-        </a>
-        <a
-          href={contact.linkedin}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="LinkedIn"
-          className="text-cream/70 hover:text-cream transition-colors"
-        >
-          <Linkedin size={20} />
-        </a>
-        <a
-          href={`mailto:${contact.email}`}
-          aria-label="Email"
-          className="text-cream/70 hover:text-cream transition-colors"
-        >
-          <Mail size={20} />
-        </a>
-      </div>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-line">
-      <div className="max-w-3xl mx-auto px-6 md:px-0 py-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-        <span className="font-mono text-xs text-slate">© {new Date().getFullYear()} Alladi Amulya</span>
-        <span className="font-mono text-xs text-slate">built with React + Tailwind</span>
-      </div>
-    </footer>
-  );
-}
-
-function SkillGroup({ title, items }) {
-  return (
-    <div>
-      <h3 className="font-mono text-xs uppercase tracking-wide text-slate mb-4">{title}</h3>
-      <div className="flex flex-wrap gap-2">
-        {items.map((s) => (
-          <span
-            key={s}
-            className="font-mono text-sm text-cream/80 border border-line rounded px-3 py-2"
-          >
-            {s}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkillsPage() {
-  return (
-    <section className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-20">
-      <h1 className="font-display text-2xl md:text-3xl text-cream mb-2">Skills</h1>
-      <p className="font-body text-slate text-sm max-w-md mb-10">
-        The languages, frameworks, and tooling behind the MERN stack projects in{" "}
-        <SectionLink hash="work">Work</SectionLink>.
-      </p>
-
-      <div className="space-y-12">
-        <SkillGroup title="Technical Skills" items={skills.technical} />
-        <SkillGroup title="Tools" items={skills.tools} />
-      </div>
-    </section>
-  );
-}
-
-function CertificateEntry({ cert }) {
-  return (
-    <div className="border-t border-line py-10 first:border-t-0 first:pt-0">
-      <div className="grid md:grid-cols-5 gap-8 items-start">
-        <div className="md:col-span-2">
-          <img
-            src={certificateImages[cert.image]}
-            alt={`${cert.title} certificate`}
-            className="w-full rounded-lg border border-line"
-          />
+    <section id="contact" className="section-shell pb-24">
+      <SectionHeading eyebrow="06 / Contact" title="Let's build something useful." text="Have a role, project or opportunity in mind? Send me a message and I'll get back to you." />
+      <div className="grid lg:grid-cols-[1fr_.75fr] gap-6">
+        <form action={`mailto:${contact.email}`} method="post" encType="text/plain" className="glass-card p-7 md:p-9 space-y-5">
+          <div className="grid md:grid-cols-2 gap-5">
+            <label>Name<input name="name" required placeholder="Your name" /></label>
+            <label>Email<input name="email" type="email" required placeholder="you@example.com" /></label>
+          </div>
+          <label>Message<textarea name="message" rows="6" required placeholder="Tell me about your opportunity..." /></label>
+          <button type="submit" className="btn-primary">Send message <Mail size={16}/></button>
+        </form>
+        <div className="glass-card p-7 md:p-9">
+          <p className="font-mono text-xs uppercase tracking-widest text-slate">Direct contact</p>
+          <button onClick={copyEmail} className="mt-5 text-left w-full text-cream hover:text-gold transition-colors break-all">
+            <span className="text-sm">{contact.email}</span>
+            <span className="ml-2 inline-flex align-middle">{copied ? <Check size={15}/> : <Copy size={15}/>}</span>
+          </button>
+          <div className="h-px bg-line my-7" />
+          <div className="space-y-4">
+            <a href={contact.linkedin} target="_blank" rel="noreferrer" className="contact-link"><Linkedin size={18}/> LinkedIn <ArrowUpRight size={14}/></a>
+            <a href={contact.github} target="_blank" rel="noreferrer" className="contact-link"><Github size={18}/> GitHub <ArrowUpRight size={14}/></a>
+            <a href={`mailto:${contact.email}`} className="contact-link"><Mail size={18}/> Email <ArrowUpRight size={14}/></a>
+          </div>
         </div>
-        <div className="md:col-span-3">
-          <h3 className="font-display text-xl text-cream mb-1">{cert.title}</h3>
-          <p className="font-mono text-xs text-slate mb-4">
-            {cert.issuer} · {cert.duration} · Issued {cert.issuedDate}
-          </p>
-          <p className="font-body text-cream/70 text-[15px] leading-relaxed max-w-xl mb-3">
-            {cert.desc}
-          </p>
-          <p className="font-mono text-xs text-slate">{cert.note}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CertificatesPage() {
-  return (
-    <section className="max-w-3xl mx-auto px-6 md:px-0 py-16 md:py-20">
-      <h1 className="font-display text-2xl md:text-3xl text-cream mb-2">Certificates</h1>
-      <p className="font-body text-slate text-sm max-w-md mb-4">
-        Formal training backing the skills in{" "}
-        <SectionLink hash="about">About</SectionLink> and the projects in{" "}
-        <SectionLink hash="work">Work</SectionLink>.
-      </p>
-      <div>
-        {certificates.map((cert) => (
-          <CertificateEntry key={cert.title} cert={cert} />
-        ))}
       </div>
     </section>
   );
@@ -444,36 +263,17 @@ function CertificatesPage() {
 
 function Home() {
   const location = useLocation();
-
-  // If we navigated here from another route with a section to scroll to
-  // (see SectionLink), jump there once the page has rendered.
   useEffect(() => {
-    if (location.state?.scrollTo) {
-      const el = document.getElementById(location.state.scrollTo);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }
+    const target = location.state?.scrollTo;
+    if (target) setTimeout(() => document.getElementById(target)?.scrollIntoView({ behavior: "smooth" }), 50);
   }, [location.state]);
+  return <><Hero/><About/><Resume/><Skills/><Projects/><Certificates/><Contact/></>;
+}
 
-  return (
-    <>
-      <Hero />
-      <Work />
-      <About />
-      <Contact />
-    </>
-  );
+function Footer() {
+  return <footer className="border-t border-line"><div className="max-w-6xl mx-auto px-5 md:px-8 py-8 flex flex-col sm:flex-row justify-between gap-3 text-xs text-slate"><span>© {new Date().getFullYear()} Alladi Amulya</span><span>Built with React + Tailwind CSS</span></div></footer>;
 }
 
 export default function App() {
-  return (
-    <div className="min-h-screen bg-ink font-body">
-      <Nav />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/skills" element={<SkillsPage />} />
-        <Route path="/certificates" element={<CertificatesPage />} />
-      </Routes>
-      <Footer />
-    </div>
-  );
+  return <div className="min-h-screen bg-ink font-body"><Nav/><Routes><Route path="/" element={<Home/>}/></Routes><Footer/></div>;
 }

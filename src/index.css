@@ -3,38 +3,35 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    box-sizing: border-box;
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background:#0d1122; color:#f1efea; }
+  ::selection { background:#e8a33d; color:#0d1122; }
+  a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline:2px solid #e8a33d; outline-offset:3px;
   }
-  html {
-    scroll-behavior: smooth;
+  label { display:block; color:#8891a8; font-size:.8rem; }
+  input, textarea {
+    width:100%; margin-top:.55rem; border:1px solid #2a3150; border-radius:.75rem;
+    background:#12172b; color:#f1efea; padding:.8rem .95rem; transition:.2s;
   }
-  body {
-    background-color: #12172B;
-    color: #F1EFEA;
-  }
-  ::selection {
-    background-color: #E8A33D;
-    color: #12172B;
-  }
-  a:focus-visible,
-  button:focus-visible {
-    outline: 2px solid #E8A33D;
-    outline-offset: 3px;
-  }
+  input:focus, textarea:focus { border-color:#e8a33d; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  * { animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important; }
 }
-
-.blink {
-  animation: blink 1s step-start infinite;
+@layer components {
+  .section-shell { @apply max-w-6xl mx-auto px-5 md:px-8 py-20 md:py-28 scroll-mt-16; }
+  .glass-card { @apply rounded-2xl border border-line bg-ink2/70 backdrop-blur-sm; }
+  .project-card { @apply rounded-2xl border border-line bg-ink2/55 p-6 md:p-7 transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-[0_18px_60px_rgba(0,0,0,.25)]; }
+  .skill-pill { @apply inline-flex rounded-full border border-line bg-ink/40 px-3 py-1.5 text-xs text-cream/75; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gold px-5 py-3 text-sm font-semibold text-ink transition hover:bg-golddim; }
+  .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-ink2/70 px-5 py-3 text-sm font-medium text-cream transition hover:border-slate; }
+  .social { @apply text-slate transition hover:text-gold; }
+  .link-gold { @apply inline-flex items-center gap-1.5 text-gold hover:text-cream transition; }
+  .link-muted { @apply inline-flex items-center gap-1.5 text-cream/65 hover:text-cream transition; }
+  .contact-link { @apply flex items-center gap-3 text-cream/70 hover:text-gold transition; }
+  .icon-box { @apply w-12 h-12 rounded-xl border border-line bg-ink flex items-center justify-center text-gold; }
 }
-@keyframes blink {
-  50% { opacity: 0; }
-}
+.blink { animation: blink 1s step-start infinite; }
+@keyframes blink { 50% { opacity:0; } }
