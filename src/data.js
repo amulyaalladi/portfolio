@@ -28,6 +28,15 @@ export const projects = [
     live: "https://realtimenews1.netlify.app",
     frontend: "https://github.com/amulyaalladi/newsportalFrotend.git",
     backend: "https://github.com/amulyaalladi/NewsPortalBackend.git"
+  },
+  {
+     n: "04",
+    name: "Kanban App",
+    tagline: "Allows users to visually organize, drag-and-drop, and monitor task progression across custom status columns in real time",
+    desc: "A MERN stack (MongoDB, Express.js, React.js, and Node.js), it allows users to visually organize, drag-and-drop, and monitor task progression across custom status columns in real time.",
+    stack: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
+    live: "https://kanban1project.netlify.app",
+    code: "https://github.com/amulyaalladi/kanban.git"
   }
 ];
 
