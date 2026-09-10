@@ -152,7 +152,7 @@ function Resume() {
           <a href={RESUME_URL} download className="btn-secondary"><Download size={16}/> Download</a>
         </div>
       </div>
-      <p className="text-xs text-slate mt-3">Place your latest PDF at <code className="text-gold">public/resume.pdf</code> to activate these buttons.</p>
+      
     </section>
   );
 }
